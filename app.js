@@ -1,11 +1,11 @@
 const API_BASE_URL = "https://nour-gradeboard-api-1cea46a0d1f3.herokuapp.com";
 
-// ✅ Decode JWT payload to extract admin name from "name" key
 function getAdminNameFromToken(token) {
   const payload = token.split('.')[1];
   const decoded = atob(payload);
   const parsed = JSON.parse(decoded);
-  return parsed.name; // ✅ use "name" instead of "sub"
+  console.log("🔍 Decoded admin name (sub):", parsed.sub); // ✅ Debug log
+  return parsed.sub; // ✅ admin name is in "sub"
 }
 
 
