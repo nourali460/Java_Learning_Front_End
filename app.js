@@ -1,4 +1,3 @@
-
 const API_BASE_URL = "https://nour-gradeboard-api-1cea46a0d1f3.herokuapp.com";
 let gradeData = [];
 
@@ -77,8 +76,21 @@ function logout() {
 
 window.onload = () => {
   if (localStorage.getItem("jwt")) showGrades();
+
+  // Live student ID search
+  const searchInput = document.getElementById("search-student");
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.toLowerCase();
+      const filtered = gradeData.filter(g =>
+        g.studentId.toLowerCase().includes(query)
+      );
+      renderTable(filtered);
+    });
+  }
 };
 
+// Sorting by column
 $('th').on('click', function () {
   const column = $(this).data('colname');
   const order = $(this).data('order');
