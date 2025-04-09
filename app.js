@@ -4,10 +4,9 @@ function getAdminNameFromToken(token) {
   const payload = token.split('.')[1];
   const decoded = atob(payload);
   const parsed = JSON.parse(decoded);
-  console.log("🔍 Decoded admin name (sub):", parsed.sub); // ✅ Debug log
-  return parsed.sub; // ✅ admin name is in "sub"
+  console.log("🔍 Decoded admin name (sub):", parsed.sub);
+  return parsed.sub;
 }
-
 
 function handleLogin() {
   const name = document.getElementById("username").value.trim();
@@ -26,7 +25,7 @@ function handleLogin() {
     .then(res => res.ok ? res.json() : Promise.reject("Login failed"))
     .then(data => {
       localStorage.setItem("jwt", data.token);
-      showGrades(); // ✅ trigger grade fetch
+      showGrades();
     })
     .catch(err => {
       console.error(err);
@@ -38,7 +37,7 @@ function showGrades() {
   const token = localStorage.getItem("jwt");
   if (!token) return;
 
-  const adminName = getAdminNameFromToken(token); // ✅ extract admin name
+  const adminName = getAdminNameFromToken(token);
   const url = `${API_BASE_URL}/grades?admin=${adminName}`;
 
   document.getElementById("login-section").style.display = "none";
@@ -51,13 +50,22 @@ function showGrades() {
     .then(grades => {
       const tbody = document.getElementById("grades-table-body");
       tbody.innerHTML = "";
+
+      // Sort by timestamp (descending)
+      grades.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
       grades.forEach(g => {
+        const dateFormatted = new Date(g.timestamp).toLocaleString(undefined, {
+          dateStyle: 'short',
+          timeStyle: 'short'
+        });
+
         const row = `<tr>
           <td>${g.studentId}</td>
           <td>${g.course}</td>
           <td>${g.assignment}</td>
           <td>${g.grade}</td>
-          <td>${g.timestamp}</td>
+          <td>${dateFormatted}</td>
         </tr>`;
         tbody.innerHTML += row;
       });
