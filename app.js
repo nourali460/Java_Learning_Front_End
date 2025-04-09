@@ -1,22 +1,21 @@
+
 const API_BASE_URL = "https://nour-gradeboard-api-1cea46a0d1f3.herokuapp.com";
+let gradeData = [];
 
 function getAdminNameFromToken(token) {
   const payload = token.split('.')[1];
   const decoded = atob(payload);
   const parsed = JSON.parse(decoded);
-  console.log("🔍 Decoded admin name (sub):", parsed.sub);
   return parsed.sub;
 }
 
 function handleLogin() {
   const name = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
-
   if (!name || !password) {
     alert("Please enter both username and password.");
     return;
   }
-
   fetch(`${API_BASE_URL}/admins/validate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -33,65 +32,42 @@ function handleLogin() {
     });
 }
 
-function applyFilters() {
-  const studentFilter = document.getElementById("studentFilter").value.trim().toLowerCase();
-  const assignmentFilter = document.getElementById("assignmentFilter").value.trim().toLowerCase();
-
-  const rows = document.querySelectorAll("#grades-table-body tr");
-
-  rows.forEach(row => {
-    const studentId = row.children[0].textContent.toLowerCase();
-    const assignment = row.children[2].textContent.toLowerCase();
-
-    const matchesStudent = !studentFilter || studentId.includes(studentFilter);
-    const matchesAssignment = !assignmentFilter || assignment.includes(assignmentFilter);
-
-    row.style.display = (matchesStudent && matchesAssignment) ? "" : "none";
-  });
-}
-
-
 function showGrades() {
   const token = localStorage.getItem("jwt");
   if (!token) return;
-
   const adminName = getAdminNameFromToken(token);
   const url = `${API_BASE_URL}/grades?admin=${adminName}`;
-
   document.getElementById("login-section").style.display = "none";
   document.getElementById("grades-section").style.display = "block";
 
-  fetch(url, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
+  fetch(url, { headers: { Authorization: `Bearer ${token}` } })
     .then(res => res.json())
-    .then(grades => {
-      const tbody = document.getElementById("grades-table-body");
-      tbody.innerHTML = "";
-
-      // Sort by timestamp (descending)
-      grades.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-      grades.forEach(g => {
-        const dateFormatted = new Date(g.timestamp).toLocaleString(undefined, {
-          dateStyle: 'short',
-          timeStyle: 'short'
-        });
-
-        const row = `<tr>
-          <td>${g.studentId}</td>
-          <td>${g.course}</td>
-          <td>${g.assignment}</td>
-          <td>${g.grade}</td>
-          <td>${dateFormatted}</td>
-        </tr>`;
-        tbody.innerHTML += row;
-      });
+    .then(data => {
+      gradeData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      renderTable(gradeData);
     })
     .catch(err => {
       console.error(err);
       alert("Failed to fetch grades.");
     });
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById("grades-table-body");
+  tbody.innerHTML = "";
+  data.forEach(g => {
+    const dateFormatted = new Date(g.timestamp).toLocaleString(undefined, {
+      dateStyle: 'short',
+      timeStyle: 'short'
+    });
+    tbody.innerHTML += `<tr>
+      <td>${g.studentId}</td>
+      <td>${g.course}</td>
+      <td>${g.assignment}</td>
+      <td>${g.grade}</td>
+      <td>${dateFormatted}</td>
+    </tr>`;
+  });
 }
 
 function logout() {
@@ -100,7 +76,22 @@ function logout() {
 }
 
 window.onload = () => {
-  if (localStorage.getItem("jwt")) {
-    showGrades();
-  }
+  if (localStorage.getItem("jwt")) showGrades();
 };
+
+$('th').on('click', function () {
+  const column = $(this).data('colname');
+  const order = $(this).data('order');
+  $(this).data('order', order === 'desc' ? 'asc' : 'desc');
+  const sorted = [...gradeData].sort((a, b) => {
+    if (column === "timestamp") {
+      return order === 'desc'
+        ? new Date(b[column]) - new Date(a[column])
+        : new Date(a[column]) - new Date(b[column]);
+    }
+    return order === 'desc'
+      ? (a[column] > b[column] ? 1 : -1)
+      : (a[column] < b[column] ? 1 : -1);
+  });
+  renderTable(sorted);
+});
