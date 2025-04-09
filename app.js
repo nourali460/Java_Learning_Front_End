@@ -33,6 +33,24 @@ function handleLogin() {
     });
 }
 
+function applyFilters() {
+  const studentFilter = document.getElementById("studentFilter").value.trim().toLowerCase();
+  const assignmentFilter = document.getElementById("assignmentFilter").value.trim().toLowerCase();
+
+  const rows = document.querySelectorAll("#grades-table-body tr");
+
+  rows.forEach(row => {
+    const studentId = row.children[0].textContent.toLowerCase();
+    const assignment = row.children[2].textContent.toLowerCase();
+
+    const matchesStudent = !studentFilter || studentId.includes(studentFilter);
+    const matchesAssignment = !assignmentFilter || assignment.includes(assignmentFilter);
+
+    row.style.display = (matchesStudent && matchesAssignment) ? "" : "none";
+  });
+}
+
+
 function showGrades() {
   const token = localStorage.getItem("jwt");
   if (!token) return;

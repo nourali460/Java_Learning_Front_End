@@ -25,23 +25,23 @@
 
   <!-- Grades Section -->
   <div id="grades-section" style="display: none;">
-    <div class="d-flex justify-content-between align-items-center mt-5">
-      <h3>Student Grades</h3>
+    <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+      <h3 class="mb-0">Student Grades</h3>
       <button class="btn btn-outline-danger" onclick="logout()">Logout</button>
     </div>
 
-    <!-- Filter Controls -->
+    <!-- Filters -->
     <div class="card p-3 mb-4 shadow-sm">
-      <div class="row g-3 align-items-center">
+      <div class="row g-3 align-items-end">
         <div class="col-md-4">
-          <label for="filter-student" class="form-label mb-1">Filter by Student ID</label>
-          <input type="text" id="filter-student" class="form-control" placeholder="e.g. student123" />
+          <label for="studentFilter" class="form-label">Filter by Student ID</label>
+          <input type="text" id="studentFilter" class="form-control" placeholder="e.g. student123" />
         </div>
         <div class="col-md-4">
-          <label for="filter-assignment" class="form-label mb-1">Filter by Assignment</label>
-          <input type="text" id="filter-assignment" class="form-control" placeholder="e.g. Assignment-1" />
+          <label for="assignmentFilter" class="form-label">Filter by Assignment</label>
+          <input type="text" id="assignmentFilter" class="form-control" placeholder="e.g. Assignment-1" />
         </div>
-        <div class="col-md-4 d-flex align-items-end">
+        <div class="col-md-4">
           <button class="btn btn-primary w-100" onclick="applyFilters()">Apply Filters</button>
         </div>
       </div>
