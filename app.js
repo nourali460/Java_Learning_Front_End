@@ -44,7 +44,8 @@ function showGrades() {
     .then(res => res.json())
     .then(data => {
       gradeData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      populateSemesterDropdown(gradeData); // dynamic again ✅
+      populateSemesterDropdown(gradeData);
+      populateCourseDropdown(gradeData);
       applyFilters();
     })
     .catch(err => {
@@ -71,16 +72,58 @@ function populateSemesterDropdown(data) {
   }
 }
 
+function populateCourseDropdown(data) {
+  const courseSet = new Set(data.map(g => g.course).filter(Boolean));
+  const courseSelect = document.getElementById("course-select");
+
+  courseSelect.innerHTML = '<option value="">All Courses</option>';
+  Array.from(courseSet).sort().forEach(course => {
+    const option = document.createElement("option");
+    option.value = course;
+    option.textContent = course;
+    courseSelect.appendChild(option);
+  });
+
+  courseSelect.addEventListener("change", () => {
+    populateAssignmentDropdown(data);
+    applyFilters();
+  });
+
+  populateAssignmentDropdown(data); // Initialize on first load
+}
+
+function populateAssignmentDropdown(data) {
+  const selectedCourse = document.getElementById("course-select").value;
+  const assignmentSet = new Set(
+    data.filter(g => !selectedCourse || g.course === selectedCourse)
+        .map(g => g.assignment)
+        .filter(Boolean)
+  );
+
+  const assignmentSelect = document.getElementById("assignment-select");
+  assignmentSelect.innerHTML = '<option value="">All Assignments</option>';
+  Array.from(assignmentSet).sort().forEach(a => {
+    const option = document.createElement("option");
+    option.value = a;
+    option.textContent = a;
+    assignmentSelect.appendChild(option);
+  });
+}
+
 function applyFilters() {
   const query = document.getElementById("search-student").value.toLowerCase();
   const selectedSemester = document.getElementById("semester-select").value;
+  const selectedCourse = document.getElementById("course-select").value;
+  const selectedAssignment = document.getElementById("assignment-select").value;
 
   localStorage.setItem("selectedSemester", selectedSemester);
 
   const filtered = gradeData.filter(g => {
     const matchId = g.studentId.toLowerCase().includes(query);
     const matchSemester = !selectedSemester || g.semesterId === selectedSemester;
-    return matchId && matchSemester;
+    const matchCourse = !selectedCourse || g.course === selectedCourse;
+    const matchAssignment = !selectedAssignment || g.assignment === selectedAssignment;
+    return matchId && matchSemester && matchCourse && matchAssignment;
   });
 
   renderTable(filtered);
@@ -114,19 +157,12 @@ function logout() {
 window.onload = () => {
   if (localStorage.getItem("jwt")) showGrades();
 
-  const searchInput = document.getElementById("search-student");
-  const semesterSelect = document.getElementById("semester-select");
-
-  if (searchInput) {
-    searchInput.addEventListener("input", applyFilters);
-  }
-
-  if (semesterSelect) {
-    semesterSelect.addEventListener("change", applyFilters);
-  }
+  document.getElementById("search-student").addEventListener("input", applyFilters);
+  document.getElementById("semester-select").addEventListener("change", applyFilters);
+  document.getElementById("assignment-select").addEventListener("change", applyFilters);
 };
 
-// ✅ Sorting only current filtered results
+// Sorting only current filtered results
 $('th').on('click', function () {
   const column = $(this).data('colname');
   const order = $(this).data('order');

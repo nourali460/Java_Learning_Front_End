@@ -32,25 +32,36 @@
         <h3>Student Grades</h3>
         <button class="btn btn-outline-danger" onclick="logout()">Logout</button>
       </div>
-      
-<!-- Semester Selection -->
-<div class="mb-3">
-  <label for="semester-select" class="form-label">Filter by Semester</label>
-  <select id="semester-select" class="form-select">
-    <option value="">All Semesters</option>
-    <option value="FALL 2025">FALL 2025</option>
-    <option value="SPRING 2026">SPRING 2026</option>
-    <option value="SUMMER 2026">SUMMER 2026</option>
-    <option value="FALL 2026">FALL 2026</option>
-  </select>
-</div>
 
-
-      <!-- Search by Student -->
-      <div class="mb-3">
-        <input type="text" id="search-student" class="form-control" placeholder="Search by Student ID..." />
+      <!-- Filter Controls -->
+      <div class="card p-3 mb-4 shadow-sm">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label for="semester-select" class="form-label">Semester</label>
+            <select id="semester-select" class="form-select">
+              <option value="">All Semesters</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="course-select" class="form-label">Course</label>
+            <select id="course-select" class="form-select">
+              <option value="">All Courses</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="assignment-select" class="form-label">Assignment</label>
+            <select id="assignment-select" class="form-select">
+              <option value="">All Assignments</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="search-student" class="form-label">Search by Student ID</label>
+            <input type="text" id="search-student" class="form-control" placeholder="e.g. student123" />
+          </div>
+        </div>
       </div>
-      
+
+      <!-- Table -->
       <div class="table-responsive">
         <table class="table table-striped table-bordered">
           <thead class="table-primary">
