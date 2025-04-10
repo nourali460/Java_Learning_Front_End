@@ -12,6 +12,7 @@ function getAdminNameFromToken(token) {
 function showGrades() {
   const token = localStorage.getItem("jwt");
   if (!token) return;
+
   const adminName = getAdminNameFromToken(token);
   const url = `${API_BASE_URL}/grades?admin=${adminName}`;
 
@@ -21,6 +22,7 @@ function showGrades() {
       gradeData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       populateSemesterDropdown(gradeData);
       populateCourseDropdown(gradeData);
+      populateAssignmentDropdown(gradeData);
       applyFilters();
     })
     .catch(err => {
@@ -31,67 +33,64 @@ function showGrades() {
 
 function populateSemesterDropdown(data) {
   const semesterSet = new Set(data.map(g => g.semesterId).filter(Boolean));
-  const semesterSelect = document.getElementById("semester-select");
+  const semesterSelect = $("#semester-select");
+  semesterSelect.empty().append('<option value="">All Semesters</option>');
 
-  semesterSelect.innerHTML = '<option value="">All Semesters</option>';
   Array.from(semesterSet).sort().forEach(semester => {
-    const option = document.createElement("option");
-    option.value = semester;
-    option.textContent = semester;
-    semesterSelect.appendChild(option);
+    semesterSelect.append(`<option value="${semester}">${semester}</option>`);
   });
 
   const saved = localStorage.getItem("selectedSemester");
   if (saved && semesterSet.has(saved)) {
-    semesterSelect.value = saved;
+    semesterSelect.val(saved);
   }
 }
 
 function populateCourseDropdown(data) {
   const courseSet = new Set(data.map(g => g.course).filter(Boolean));
-  const courseSelect = document.getElementById("course-select");
+  const courseSelect = $("#course-select");
+  courseSelect.empty().append('<option value="">All Courses</option>');
 
-  courseSelect.innerHTML = '<option value="">All Courses</option>';
   Array.from(courseSet).sort().forEach(course => {
-    const option = document.createElement("option");
-    option.value = course;
-    option.textContent = course;
-    courseSelect.appendChild(option);
+    courseSelect.append(`<option value="${course}">${course}</option>`);
   });
 
-  courseSelect.addEventListener("change", () => {
-    populateAssignmentDropdown(data);
-    applyFilters();
-  });
-
-  populateAssignmentDropdown(data);
+  const saved = localStorage.getItem("selectedCourse");
+  if (saved && courseSet.has(saved)) {
+    courseSelect.val(saved);
+  }
 }
 
 function populateAssignmentDropdown(data) {
-  const selectedCourse = document.getElementById("course-select").value;
+  const selectedCourse = $("#course-select").val();
   const assignmentSet = new Set(
     data.filter(g => !selectedCourse || g.course === selectedCourse)
         .map(g => g.assignment)
         .filter(Boolean)
   );
 
-  const assignmentSelect = document.getElementById("assignment-select");
-  assignmentSelect.innerHTML = '<option value="">All Assignments</option>';
+  const assignmentSelect = $("#assignment-select");
+  assignmentSelect.empty().append('<option value="">All Assignments</option>');
+
   Array.from(assignmentSet).sort().forEach(a => {
-    const option = document.createElement("option");
-    option.value = a;
-    option.textContent = a;
-    assignmentSelect.appendChild(option);
+    assignmentSelect.append(`<option value="${a}">${a}</option>`);
   });
+
+  const saved = localStorage.getItem("selectedAssignment");
+  if (saved && assignmentSet.has(saved)) {
+    assignmentSelect.val(saved);
+  }
 }
 
 function applyFilters() {
-  const query = document.getElementById("search-student").value.toLowerCase();
-  const selectedSemester = document.getElementById("semester-select").value;
-  const selectedCourse = document.getElementById("course-select").value;
-  const selectedAssignment = document.getElementById("assignment-select").value;
+  const query = $("#search-student").val().toLowerCase();
+  const selectedSemester = $("#semester-select").val();
+  const selectedCourse = $("#course-select").val();
+  const selectedAssignment = $("#assignment-select").val();
 
   localStorage.setItem("selectedSemester", selectedSemester);
+  localStorage.setItem("selectedCourse", selectedCourse);
+  localStorage.setItem("selectedAssignment", selectedAssignment);
 
   const filtered = gradeData.filter(g => {
     const matchId = g.studentId.toLowerCase().includes(query);
@@ -106,32 +105,39 @@ function applyFilters() {
 
 function renderTable(data) {
   currentDisplayedData = data;
-  const tbody = document.getElementById("grades-table-body");
-  tbody.innerHTML = "";
+  const tbody = $("#grades-table-body");
+  tbody.empty();
+
   data.forEach(g => {
     const dateFormatted = new Date(g.timestamp).toLocaleString(undefined, {
       dateStyle: 'short',
       timeStyle: 'short'
     });
-    tbody.innerHTML += `<tr>
-      <td>${g.studentId}</td>
-      <td>${g.course}</td>
-      <td>${g.assignment}</td>
-      <td>${g.grade}</td>
-      <td>${dateFormatted}</td>
-    </tr>`;
+
+    tbody.append(`
+      <tr>
+        <td>${g.studentId}</td>
+        <td>${g.course}</td>
+        <td>${g.assignment}</td>
+        <td>${g.grade}</td>
+        <td>${dateFormatted}</td>
+      </tr>
+    `);
   });
 }
 
-// Attach event listeners after tab loads
 $(document).ready(() => {
   showGrades();
+
   $(document).on("input", "#search-student", applyFilters);
   $(document).on("change", "#semester-select", applyFilters);
+  $(document).on("change", "#course-select", () => {
+    populateAssignmentDropdown(gradeData);
+    applyFilters();
+  });
   $(document).on("change", "#assignment-select", applyFilters);
 });
 
-// Column sorting
 $(document).on('click', 'th', function () {
   const column = $(this).data('colname');
   const order = $(this).data('order');
