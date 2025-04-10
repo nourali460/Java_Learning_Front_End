@@ -44,7 +44,7 @@ function showGrades() {
     .then(res => res.json())
     .then(data => {
       gradeData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      populateSemesterDropdown(); // now static
+      populateSemesterDropdown(gradeData); // dynamic again ✅
       applyFilters();
     })
     .catch(err => {
@@ -53,19 +53,12 @@ function showGrades() {
     });
 }
 
-// ✅ Static semester list
-function populateSemesterDropdown() {
-  const semesters = [
-    "FALL 2025",
-    "SPRING 2026",
-    "SUMMER 2026",
-    "FALL 2026"
-  ];
-
+function populateSemesterDropdown(data) {
+  const semesterSet = new Set(data.map(g => g.semesterId).filter(Boolean));
   const semesterSelect = document.getElementById("semester-select");
-  semesterSelect.innerHTML = '<option value="">All Semesters</option>';
 
-  semesters.forEach(semester => {
+  semesterSelect.innerHTML = '<option value="">All Semesters</option>';
+  Array.from(semesterSet).sort().forEach(semester => {
     const option = document.createElement("option");
     option.value = semester;
     option.textContent = semester;
@@ -73,7 +66,7 @@ function populateSemesterDropdown() {
   });
 
   const saved = localStorage.getItem("selectedSemester");
-  if (saved && semesters.includes(saved)) {
+  if (saved && semesterSet.has(saved)) {
     semesterSelect.value = saved;
   }
 }
@@ -133,7 +126,7 @@ window.onload = () => {
   }
 };
 
-// ✅ Sorting only filtered results
+// ✅ Sorting only current filtered results
 $('th').on('click', function () {
   const column = $(this).data('colname');
   const order = $(this).data('order');
