@@ -46,15 +46,13 @@ function loadTab(tabName) {
 
   document.getElementById(`tab-${tabName}`).classList.add("active");
 
-  // Clear previous content and load new tab content
-  contentArea.innerHTML = ''; // Clear the current content
-
   fetch(`${tabName}.html`)
     .then(response => response.text())
     .then(html => {
-      contentArea.innerHTML = html; // Set the new content
+      contentArea.innerHTML = html;
+
       const script = document.createElement("script");
-      script.src = `js/${tabName}.js`; // Dynamically load the appropriate script for the tab
+      script.src = `js/${tabName}.js`;
       script.type = "module";
       document.body.appendChild(script);
     })
