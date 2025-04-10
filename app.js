@@ -1,5 +1,6 @@
 const API_BASE_URL = "https://nour-gradeboard-api-1cea46a0d1f3.herokuapp.com";
 let gradeData = [];
+let currentDisplayedData = [];
 
 function getAdminNameFromToken(token) {
   const payload = token.split('.')[1];
@@ -44,7 +45,7 @@ function showGrades() {
     .then(data => {
       gradeData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       populateSemesterDropdown(gradeData);
-      renderTable(gradeData);
+      applyFilters(); // ensures selected semester + search term are honored
     })
     .catch(err => {
       console.error(err);
@@ -55,6 +56,7 @@ function showGrades() {
 function populateSemesterDropdown(data) {
   const semesterSet = new Set(data.map(g => g.semesterId).filter(Boolean));
   const semesterSelect = document.getElementById("semester-select");
+
   semesterSelect.innerHTML = '<option value="">All Semesters</option>';
   Array.from(semesterSet).sort().forEach(semester => {
     const option = document.createElement("option");
@@ -62,9 +64,30 @@ function populateSemesterDropdown(data) {
     option.textContent = semester;
     semesterSelect.appendChild(option);
   });
+
+  const saved = localStorage.getItem("selectedSemester");
+  if (saved && semesterSet.has(saved)) {
+    semesterSelect.value = saved;
+  }
+}
+
+function applyFilters() {
+  const query = document.getElementById("search-student").value.toLowerCase();
+  const selectedSemester = document.getElementById("semester-select").value;
+
+  localStorage.setItem("selectedSemester", selectedSemester); // persist
+
+  const filtered = gradeData.filter(g => {
+    const matchId = g.studentId.toLowerCase().includes(query);
+    const matchSemester = !selectedSemester || g.semesterId === selectedSemester;
+    return matchId && matchSemester;
+  });
+
+  renderTable(filtered);
 }
 
 function renderTable(data) {
+  currentDisplayedData = data;
   const tbody = document.getElementById("grades-table-body");
   tbody.innerHTML = "";
   data.forEach(g => {
@@ -84,23 +107,8 @@ function renderTable(data) {
 
 function logout() {
   localStorage.removeItem("jwt");
+  localStorage.removeItem("selectedSemester");
   location.reload();
-}
-
-function applyFilters() {
-  const searchInput = document.getElementById("search-student");
-  const semesterSelect = document.getElementById("semester-select");
-
-  const query = searchInput.value.toLowerCase();
-  const selectedSemester = semesterSelect.value;
-
-  const filtered = gradeData.filter(g => {
-    const matchId = g.studentId.toLowerCase().includes(query);
-    const matchSemester = !selectedSemester || g.semesterId === selectedSemester;
-    return matchId && matchSemester;
-  });
-
-  renderTable(filtered);
 }
 
 window.onload = () => {
@@ -118,12 +126,13 @@ window.onload = () => {
   }
 };
 
-// Sorting by column
+// Sorting on visible (filtered) data only
 $('th').on('click', function () {
   const column = $(this).data('colname');
   const order = $(this).data('order');
   $(this).data('order', order === 'desc' ? 'asc' : 'desc');
-  const sorted = [...gradeData].sort((a, b) => {
+
+  const sorted = [...currentDisplayedData].sort((a, b) => {
     if (column === "timestamp") {
       return order === 'desc'
         ? new Date(b[column]) - new Date(a[column])
@@ -133,5 +142,6 @@ $('th').on('click', function () {
       ? (a[column] > b[column] ? 1 : -1)
       : (a[column] < b[column] ? 1 : -1);
   });
+
   renderTable(sorted);
 });
