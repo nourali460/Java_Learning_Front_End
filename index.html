@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,6 +33,18 @@
         <button class="btn btn-outline-danger" onclick="logout()">Logout</button>
       </div>
       
+      <!-- Semester Selection -->
+      <div class="mb-3">
+        <label for="semester-select" class="form-label">Filter by Semester</label>
+        <select id="semester-select" class="form-select">
+          <option value="">All Semesters</option>
+          <option value="FALL 2024">FALL 2024</option>
+          <option value="SPRING 2025">SPRING 2025</option>
+          <!-- Add more semesters here -->
+        </select>
+      </div>
+
+      <!-- Search by Student -->
       <div class="mb-3">
         <input type="text" id="search-student" class="form-control" placeholder="Search by Student ID..." />
       </div>

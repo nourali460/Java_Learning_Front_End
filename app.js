@@ -43,12 +43,25 @@ function showGrades() {
     .then(res => res.json())
     .then(data => {
       gradeData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      populateSemesterDropdown(gradeData);
       renderTable(gradeData);
     })
     .catch(err => {
       console.error(err);
       alert("Failed to fetch grades.");
     });
+}
+
+function populateSemesterDropdown(data) {
+  const semesterSet = new Set(data.map(g => g.semesterId).filter(Boolean));
+  const semesterSelect = document.getElementById("semester-select");
+  semesterSelect.innerHTML = '<option value="">All Semesters</option>';
+  Array.from(semesterSet).sort().forEach(semester => {
+    const option = document.createElement("option");
+    option.value = semester;
+    option.textContent = semester;
+    semesterSelect.appendChild(option);
+  });
 }
 
 function renderTable(data) {
@@ -74,19 +87,34 @@ function logout() {
   location.reload();
 }
 
+function applyFilters() {
+  const searchInput = document.getElementById("search-student");
+  const semesterSelect = document.getElementById("semester-select");
+
+  const query = searchInput.value.toLowerCase();
+  const selectedSemester = semesterSelect.value;
+
+  const filtered = gradeData.filter(g => {
+    const matchId = g.studentId.toLowerCase().includes(query);
+    const matchSemester = !selectedSemester || g.semesterId === selectedSemester;
+    return matchId && matchSemester;
+  });
+
+  renderTable(filtered);
+}
+
 window.onload = () => {
   if (localStorage.getItem("jwt")) showGrades();
 
-  // Live student ID search
   const searchInput = document.getElementById("search-student");
+  const semesterSelect = document.getElementById("semester-select");
+
   if (searchInput) {
-    searchInput.addEventListener("input", () => {
-      const query = searchInput.value.toLowerCase();
-      const filtered = gradeData.filter(g =>
-        g.studentId.toLowerCase().includes(query)
-      );
-      renderTable(filtered);
-    });
+    searchInput.addEventListener("input", applyFilters);
+  }
+
+  if (semesterSelect) {
+    semesterSelect.addEventListener("change", applyFilters);
   }
 };
 
