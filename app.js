@@ -61,14 +61,29 @@ function loadTab(tabName) {
     });
 }
 
-window.onload = () => {
+$(document).ready(() => {
   const token = localStorage.getItem("jwt");
-  if (token) {
-    document.getElementById("login-section").style.display = "none";
-    document.getElementById("main-content").style.display = "block";
-    loadTab("grades");
-  }
 
-  document.getElementById("tab-grades").addEventListener("click", () => loadTab("grades"));
-  document.getElementById("tab-manage").addEventListener("click", () => loadTab("manage-students"));
-};
+  if (token) {
+    $("#login-section").hide();
+    $("#main-content").show();
+    loadTab("grades");
+
+    // Bind the events for tabs
+    $("#tab-grades").on("click", () => loadTab("grades"));
+    $("#tab-manage").on("click", () => loadTab("manage-students"));
+  } else {
+    // If not logged in, wait for login
+    const interval = setInterval(() => {
+      const gradesTab = $("#tab-grades");
+      const manageTab = $("#tab-manage");
+
+      if (gradesTab.length && manageTab.length) {
+        gradesTab.on("click", () => loadTab("grades"));
+        manageTab.on("click", () => loadTab("manage-students"));
+        clearInterval(interval);
+      }
+    }, 50);
+  }
+});
+
