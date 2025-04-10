@@ -1,12 +1,6 @@
 const API_BASE_URL = "https://nour-gradeboard-api-1cea46a0d1f3.herokuapp.com";
 
-function getAdminNameFromToken(token) {
-  const payload = token.split('.')[1];
-  const decoded = atob(payload);
-  const parsed = JSON.parse(decoded);
-  return parsed.sub;
-}
-
+// Handle Login
 function handleLogin() {
   const name = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -33,56 +27,41 @@ function handleLogin() {
     });
 }
 
+// Handle Logout
 function logout() {
   localStorage.removeItem("jwt");
-  localStorage.removeItem("selectedSemester");
   location.reload();
 }
 
+// Load the appropriate tab content
 function loadTab(tabName) {
-  const contentArea = document.getElementById("tab-content");
-  const tabButtons = document.querySelectorAll(".tab-button");
-  tabButtons.forEach(btn => btn.classList.remove("active"));
+  // Reset content area
+  const gradesTab = document.getElementById("grades-tab");
+  const manageTab = document.getElementById("manage-tab");
 
-  document.getElementById(`tab-${tabName}`).classList.add("active");
-
-  fetch(`${tabName}.html`)
-    .then(response => response.text())
-    .then(html => {
-      contentArea.innerHTML = html;
-
-      const script = document.createElement("script");
-      script.src = `js/${tabName}.js`;
-      script.type = "module";
-      document.body.appendChild(script);
-    })
-    .catch(error => {
-      console.error(`Failed to load ${tabName} tab:`, error);
-    });
+  if (tabName === "grades") {
+    gradesTab.style.display = "block";
+    manageTab.style.display = "none";
+    // You can add logic here to dynamically load content for grades
+    gradesTab.innerHTML = "<h3>Student Grades</h3><p>Grades content will be loaded here...</p>";
+  } else if (tabName === "manage") {
+    gradesTab.style.display = "none";
+    manageTab.style.display = "block";
+    // You can add logic here to dynamically load content for manage students
+    manageTab.innerHTML = "<h3>Manage Students</h3><p>Manage students content will be loaded here...</p>";
+  }
 }
 
-$(document).ready(() => {
+// Tab event listeners
+window.onload = () => {
   const token = localStorage.getItem("jwt");
 
   if (token) {
-    $("#login-section").hide();
-    $("#main-content").show();
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("main-content").style.display = "block";
     loadTab("grades");
-
-    // Bind the events for tabs
-    $("#tab-grades").on("click", () => loadTab("grades"));
-    $("#tab-manage").on("click", () => loadTab("manage-students"));
-  } else {
-    // If not logged in, wait for login
-    const interval = setInterval(() => {
-      const gradesTab = $("#tab-grades");
-      const manageTab = $("#tab-manage");
-
-      if (gradesTab.length && manageTab.length) {
-        gradesTab.on("click", () => loadTab("grades"));
-        manageTab.on("click", () => loadTab("manage-students"));
-        clearInterval(interval);
-      }
-    }, 50);
   }
-});
+
+  document.getElementById("tab-grades").addEventListener("click", () => loadTab("grades"));
+  document.getElementById("tab-manage").addEventListener("click", () => loadTab("manage"));
+};
