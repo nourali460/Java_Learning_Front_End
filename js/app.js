@@ -70,5 +70,5 @@ window.onload = () => {
   }
 
   document.getElementById("tab-grades").addEventListener("click", () => loadTab("grades"));
-  document.getElementById("tab-manage").addEventListener("click", () => loadTab("manage-students"));
+  document.getElementById("tab-manage-students").addEventListener("click", () => loadTab("manage-students"));
 };
