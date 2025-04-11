@@ -1,44 +1,70 @@
-import React, { useEffect, useState } from 'react';
-import LoginForm from './components/LoginForm';
-import Dashboard from './components/Dashboard';
-import { Container } from 'react-bootstrap';
-import { decodeToken } from './utils';
+import React, { useEffect, useState } from "react";
+import { Container } from "react-bootstrap";
+import LoginForm from "./components/LoginForm";
+import Dashboard from "./components/Dashboard";
+import ManageStudents from "./components/ManageStudents";
+import NavigationBar from "./components/NavigationBar";
+import { decodeToken } from "./utils";
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem('jwt') || '');
-  const [adminName, setAdminName] = useState('');
+  const [token, setToken] = useState(localStorage.getItem("jwt") || "");
+  const [adminName, setAdminName] = useState("");
+  const [currentView, setCurrentView] = useState(localStorage.getItem("currentView") || "dashboard");
+
+  const handleLoginSuccess = (jwt) => {
+    localStorage.setItem("jwt", jwt);
+    setToken(jwt);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("currentView");
+    setToken("");
+    setAdminName("");
+    setCurrentView("dashboard");
+  };
 
   useEffect(() => {
     if (token) {
       try {
         const { sub } = decodeToken(token);
-        setAdminName(sub);
-      } catch (err) {
-        console.error('Invalid token:', err);
+        if (sub) {
+          setAdminName(sub);
+        } else {
+          handleLogout();
+        }
+      } catch {
         handleLogout();
       }
     }
   }, [token]);
 
-  const handleLoginSuccess = (jwt) => {
-    localStorage.setItem('jwt', jwt);
-    setToken(jwt);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('jwt');
-    setToken('');
-    setAdminName('');
-  };
+  useEffect(() => {
+    localStorage.setItem("currentView", currentView);
+  }, [currentView]);
 
   return (
-    <Container className="my-5">
+    <>
       {!token ? (
         <LoginForm onLoginSuccess={handleLoginSuccess} />
       ) : (
-        <Dashboard token={token} adminName={adminName} onLogout={handleLogout} />
+        <>
+          <NavigationBar
+            onLogout={handleLogout}
+            currentView={currentView}
+            setCurrentView={setCurrentView}
+          />
+          <Container className="my-4">
+            {currentView === "dashboard" && (
+              <Dashboard token={token} adminName={adminName} />
+            )}
+            {currentView === "manage" && (
+              <ManageStudents token={token} />
+            )}
+          </Container>
+        </>
       )}
-    </Container>
+    </>
   );
 }
 

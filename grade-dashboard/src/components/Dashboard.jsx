@@ -18,6 +18,12 @@ function Dashboard({ token, adminName, onLogout }) {
   const [studentQuery, setStudentQuery] = useState('');
 
   useEffect(() => {
+    if (!adminName) {
+      console.warn("⛔ No admin name found. Skipping grade fetch.");
+      setLoading(false);
+      return;
+    }
+  
     const fetchGrades = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/grades?admin=${adminName}`, {
@@ -33,8 +39,10 @@ function Dashboard({ token, adminName, onLogout }) {
         setLoading(false);
       }
     };
+  
     fetchGrades();
   }, [adminName, token]);
+  
 
   useEffect(() => {
     const filteredData = grades.filter((g) => {
@@ -46,6 +54,33 @@ function Dashboard({ token, adminName, onLogout }) {
     });
     setFiltered(filteredData);
   }, [grades, semester, course, assignment, studentQuery]);
+
+  const handleDownloadCSV = (data) => {
+    if (!data.length) return;
+
+    const headers = ['Student ID', 'Course', 'Assignment', 'Grade', 'Timestamp'];
+    const rows = data.map(g => [
+      g.studentId,
+      g.course,
+      g.assignment,
+      g.grade,
+      new Date(g.timestamp).toLocaleString()
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(r => r.map(val => `"${val}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `grades-${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   if (loading) {
     return (
@@ -79,6 +114,11 @@ function Dashboard({ token, adminName, onLogout }) {
         assignment={assignment} setAssignment={setAssignment}
         studentQuery={studentQuery} setStudentQuery={setStudentQuery}
       />
+
+      {/* CSV Download */}
+      <Button variant="success" className="mb-3" onClick={() => handleDownloadCSV(filtered)}>
+        Download CSV
+      </Button>
 
       {/* Grade Table */}
       <GradeTable data={filtered} />
