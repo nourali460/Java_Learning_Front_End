@@ -39,6 +39,120 @@ function populateSemesterDropdown(data) {
   Array.from(semesterSet).sort().forEach(semester => {
     semesterSelect.append(`<option value="${semester}">${semester}</option>`);
   });
+
+  const saved = localStorage.getItem("selectedSemester");
+  if (saved && semesterSet.has(saved)) {
+    semesterSelect.val(saved);
+  }
 }
 
-// Similar methods for populateCourseDropdown, populateAssignmentDropdown, and applyFilters
+function populateCourseDropdown(data) {
+  const courseSet = new Set(data.map(g => g.course).filter(Boolean));
+  const courseSelect = $("#course-select");
+  courseSelect.empty().append('<option value="">All Courses</option>');
+
+  Array.from(courseSet).sort().forEach(course => {
+    courseSelect.append(`<option value="${course}">${course}</option>`);
+  });
+
+  const saved = localStorage.getItem("selectedCourse");
+  if (saved && courseSet.has(saved)) {
+    courseSelect.val(saved);
+  }
+}
+
+function populateAssignmentDropdown(data) {
+  const selectedCourse = $("#course-select").val();
+  const assignmentSet = new Set(
+    data.filter(g => !selectedCourse || g.course === selectedCourse)
+        .map(g => g.assignment)
+        .filter(Boolean)
+  );
+
+  const assignmentSelect = $("#assignment-select");
+  assignmentSelect.empty().append('<option value="">All Assignments</option>');
+
+  Array.from(assignmentSet).sort().forEach(a => {
+    assignmentSelect.append(`<option value="${a}">${a}</option>`);
+  });
+
+  const saved = localStorage.getItem("selectedAssignment");
+  if (saved && assignmentSet.has(saved)) {
+    assignmentSelect.val(saved);
+  }
+}
+
+function applyFilters() {
+  const query = $("#search-student").val().toLowerCase();
+  const selectedSemester = $("#semester-select").val();
+  const selectedCourse = $("#course-select").val();
+  const selectedAssignment = $("#assignment-select").val();
+
+  localStorage.setItem("selectedSemester", selectedSemester);
+  localStorage.setItem("selectedCourse", selectedCourse);
+  localStorage.setItem("selectedAssignment", selectedAssignment);
+
+  const filtered = gradeData.filter(g => {
+    const matchId = g.studentId.toLowerCase().includes(query);
+    const matchSemester = !selectedSemester || g.semesterId === selectedSemester;
+    const matchCourse = !selectedCourse || g.course === selectedCourse;
+    const matchAssignment = !selectedAssignment || g.assignment === selectedAssignment;
+    return matchId && matchSemester && matchCourse && matchAssignment;
+  });
+
+  renderTable(filtered);
+}
+
+function renderTable(data) {
+  currentDisplayedData = data;
+  const tbody = $("#grades-table-body");
+  tbody.empty();
+
+  data.forEach(g => {
+    const dateFormatted = new Date(g.timestamp).toLocaleString(undefined, {
+      dateStyle: 'short',
+      timeStyle: 'short'
+    });
+
+    tbody.append(`
+      <tr>
+        <td>${g.studentId}</td>
+        <td>${g.course}</td>
+        <td>${g.assignment}</td>
+        <td>${g.grade}</td>
+        <td>${dateFormatted}</td>
+      </tr>
+    `);
+  });
+}
+
+$(document).ready(() => {
+  showGrades();
+
+  $(document).on("input", "#search-student", applyFilters);
+  $(document).on("change", "#semester-select", applyFilters);
+  $(document).on("change", "#course-select", () => {
+    populateAssignmentDropdown(gradeData);
+    applyFilters();
+  });
+  $(document).on("change", "#assignment-select", applyFilters);
+});
+
+$(document).on('click', 'th', function () {
+  const column = $(this).data('colname');
+  const order = $(this).data('order');
+  $(this).data('order', order === 'desc' ? 'asc' : 'desc');
+
+  const sorted = [...currentDisplayedData].sort((a, b) => {
+    if (column === "timestamp") {
+      return order === 'desc'
+        ? new Date(b[column]) - new Date(a[column])
+        : new Date(a[column]) - new Date(b[column]);
+    }
+    return order === 'desc'
+      ? (a[column] > b[column] ? 1 : -1)
+      : (a[column] < b[column] ? 1 : -1);
+  });
+
+  renderTable(sorted);
+});
