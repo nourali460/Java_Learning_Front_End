@@ -103,7 +103,7 @@ function StudentEnrollment() {
                 size="sm"
                 value={adminId}
                 onChange={(e) => setAdminId(e.target.value)}
-                placeholder="e.g., nour"
+                placeholder="e.g., firstname_ID"
               />
             </Col>
             <Col sm="auto">

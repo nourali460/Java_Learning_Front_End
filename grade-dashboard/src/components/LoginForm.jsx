@@ -39,7 +39,7 @@ function LoginForm({ onLoginSuccess }) {
           <Form.Label>Username</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter admin username"
+            placeholder="Enter username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
