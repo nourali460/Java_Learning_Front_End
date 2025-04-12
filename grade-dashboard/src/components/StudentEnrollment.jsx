@@ -86,158 +86,162 @@ function StudentEnrollment() {
   };
 
   return (
-    <Card className="p-2 mt-2 shadow-sm" style={{ fontSize: '0.9rem' }}>
-      <h6 className="text-primary fw-semibold mb-2" style={{ fontSize: '0.95rem' }}>
-        Student Enrollment (No Login Required)
-      </h6>
+    <div style={{ height: '100%' }}>
+      <Card className="p-3 shadow-sm h-100 d-flex flex-column justify-content-between" style={{ fontSize: '0.9rem' }}>
+        <div>
+          <h6 className="text-primary fw-semibold mb-3" style={{ fontSize: '0.95rem' }}>
+            Student Enrollment (No Login Required)
+          </h6>
 
-      {!adminVerified ? (
-        <>
-          <Form.Label className="mb-1" style={{ fontSize: '0.85rem' }}>
-            Enter Professor ID
-          </Form.Label>
-          <Row className="align-items-center g-2 mb-2">
-            <Col sm={8}>
-              <Form.Control
-                type="text"
-                size="sm"
-                value={adminId}
-                onChange={(e) => setAdminId(e.target.value)}
-                placeholder="e.g., firstname_ID"
-              />
-            </Col>
-            <Col sm="auto">
-              <Button
-                size="sm"
-                variant="primary"
-                style={{ height: '30px', padding: '0 10px', fontSize: '0.75rem' }}
-                onClick={verifyAdmin}
-              >
-                Verify
-              </Button>
-            </Col>
-          </Row>
-        </>
-      ) : (
-        <>
-          <Alert variant="success" className="py-2 mb-2">
-            ✅ Professor <strong>{adminId}</strong> verified.
-          </Alert>
-
-          {error && <Alert variant="danger" className="py-2 mb-2">{error}</Alert>}
-          {success && <Alert variant="success" className="py-2 mb-2">{success}</Alert>}
-
-          <Row className="mb-2">
-            <Col md={6}>
-              <Form.Select value={semester} onChange={(e) => setSemester(e.target.value)} size="sm">
-                <option value="">-- Select Semester --</option>
-                {SEMESTER_OPTIONS.map((s) => <option key={s}>{s}</option>)}
-              </Form.Select>
-            </Col>
-            <Col md={6}>
-              <Form.Select
-                value={course}
-                onChange={(e) => setCourse(e.target.value)}
-                disabled={!semester}
-                size="sm"
-              >
-                <option value="">-- Select Course --</option>
-                {COURSE_OPTIONS.map((c) => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
-                ))}
-              </Form.Select>
-            </Col>
-          </Row>
-
-          <Row className="mb-2">
-            <Col md={6}>
-              <Form.Control
-                type="text"
-                size="sm"
-                value={student.id}
-                onChange={(e) => setStudent({ ...student, id: e.target.value })}
-                placeholder="e.g., alice_12345"
-              />
-              <Form.Text className="text-muted">firstname_idnumber</Form.Text>
-            </Col>
-            <Col md={6}>
-              <Form.Control
-                type="email"
-                size="sm"
-                value={student.email}
-                onChange={(e) => setStudent({ ...student, email: e.target.value })}
-                placeholder="student@example.com"
-              />
-            </Col>
-          </Row>
-
-          <div className="d-flex justify-content-end">
-            <Button size="sm" variant="success" onClick={handleEnrollment}>
-              Submit Enrollment
-            </Button>
-          </div>
-
-          {enrolledStudent && (
+          {!adminVerified ? (
             <>
-              <Alert variant="warning" className="mt-3 mb-2 py-2">
-                ⚠️ <strong>Important:</strong> Please <u>copy and save</u> your login information.
+              <Form.Label className="mb-1" style={{ fontSize: '0.85rem' }}>
+                Enter Professor ID
+              </Form.Label>
+              <Row className="align-items-center g-2 mb-2">
+                <Col sm={8}>
+                  <Form.Control
+                    type="text"
+                    size="sm"
+                    value={adminId}
+                    onChange={(e) => setAdminId(e.target.value)}
+                    placeholder="e.g., firstname_ID"
+                  />
+                </Col>
+                <Col sm="auto">
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    style={{ height: '30px', padding: '0 10px', fontSize: '0.75rem' }}
+                    onClick={verifyAdmin}
+                  >
+                    Verify
+                  </Button>
+                </Col>
+              </Row>
+            </>
+          ) : (
+            <>
+              <Alert variant="success" className="py-2 mb-2">
+                ✅ Professor <strong>{adminId}</strong> verified.
               </Alert>
 
-              <Table bordered size="sm" className="mb-2">
-                <thead>
-                  <tr>
-                    <th>Student ID</th>
-                    <th>Email</th>
-                    <th>Password</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{enrolledStudent.id}</td>
-                    <td>{enrolledStudent.email}</td>
-                    <td><code>{enrolledStudent.password}</code></td>
-                  </tr>
-                </tbody>
-              </Table>
+              {error && <Alert variant="danger" className="py-2 mb-2">{error}</Alert>}
+              {success && <Alert variant="success" className="py-2 mb-2">{success}</Alert>}
 
-              <div className="d-flex justify-content-end gap-2">
-                <Button
-                  size="sm"
-                  variant="outline-primary"
-                  onClick={() => {
-                    const text = `Student ID: ${enrolledStudent.id}\nEmail: ${enrolledStudent.email}\nPassword: ${enrolledStudent.password}`;
-                    navigator.clipboard.writeText(text)
-                      .then(() => alert("✅ Login info copied to clipboard."))
-                      .catch(() => alert("❌ Failed to copy login info."));
-                  }}
-                >
-                  📋 Copy Info
-                </Button>
+              <Row className="mb-2">
+                <Col md={6}>
+                  <Form.Select value={semester} onChange={(e) => setSemester(e.target.value)} size="sm">
+                    <option value="">-- Select Semester --</option>
+                    {SEMESTER_OPTIONS.map((s) => <option key={s}>{s}</option>)}
+                  </Form.Select>
+                </Col>
+                <Col md={6}>
+                  <Form.Select
+                    value={course}
+                    onChange={(e) => setCourse(e.target.value)}
+                    disabled={!semester}
+                    size="sm"
+                  >
+                    <option value="">-- Select Course --</option>
+                    {COURSE_OPTIONS.map((c) => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
+                  </Form.Select>
+                </Col>
+              </Row>
 
-                <Button
-                  size="sm"
-                  variant="outline-secondary"
-                  onClick={() => {
-                    const text = `Student ID: ${enrolledStudent.id}\nEmail: ${enrolledStudent.email}\nPassword: ${enrolledStudent.password}`;
-                    const blob = new Blob([text], { type: "text/plain" });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement("a");
-                    link.href = url;
-                    link.download = `${enrolledStudent.id}_login.txt`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
-                  }}
-                >
-                  📄 Download Info
+              <Row className="mb-2">
+                <Col md={6}>
+                  <Form.Control
+                    type="text"
+                    size="sm"
+                    value={student.id}
+                    onChange={(e) => setStudent({ ...student, id: e.target.value })}
+                    placeholder="e.g., alice_12345"
+                  />
+                  <Form.Text className="text-muted">firstname_idnumber</Form.Text>
+                </Col>
+                <Col md={6}>
+                  <Form.Control
+                    type="email"
+                    size="sm"
+                    value={student.email}
+                    onChange={(e) => setStudent({ ...student, email: e.target.value })}
+                    placeholder="student@example.com"
+                  />
+                </Col>
+              </Row>
+
+              <div className="d-flex justify-content-end mb-2">
+                <Button size="sm" variant="success" onClick={handleEnrollment}>
+                  Submit Enrollment
                 </Button>
               </div>
+
+              {enrolledStudent && (
+                <>
+                  <Alert variant="warning" className="mt-3 mb-2 py-2">
+                    ⚠️ <strong>Important:</strong> Please <u>copy and save</u> your login information.
+                  </Alert>
+
+                  <Table bordered size="sm" className="mb-2">
+                    <thead>
+                      <tr>
+                        <th>Student ID</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{enrolledStudent.id}</td>
+                        <td>{enrolledStudent.email}</td>
+                        <td><code>{enrolledStudent.password}</code></td>
+                      </tr>
+                    </tbody>
+                  </Table>
+
+                  <div className="d-flex justify-content-end gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline-primary"
+                      onClick={() => {
+                        const text = `Student ID: ${enrolledStudent.id}\nEmail: ${enrolledStudent.email}\nPassword: ${enrolledStudent.password}`;
+                        navigator.clipboard.writeText(text)
+                          .then(() => alert("✅ Login info copied to clipboard."))
+                          .catch(() => alert("❌ Failed to copy login info."));
+                      }}
+                    >
+                      📋 Copy Info
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline-secondary"
+                      onClick={() => {
+                        const text = `Student ID: ${enrolledStudent.id}\nEmail: ${enrolledStudent.email}\nPassword: ${enrolledStudent.password}`;
+                        const blob = new Blob([text], { type: "text/plain" });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = `${enrolledStudent.id}_login.txt`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                      }}
+                    >
+                      📄 Download Info
+                    </Button>
+                  </div>
+                </>
+              )}
             </>
           )}
-        </>
-      )}
-    </Card>
+        </div>
+      </Card>
+    </div>
   );
 }
 

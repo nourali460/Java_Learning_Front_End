@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import LoginForm from "./components/LoginForm";
@@ -6,7 +7,6 @@ import ManageStudents from "./components/ManageStudents";
 import NavigationBar from "./components/NavigationBar";
 import { decodeToken } from "./utils";
 import StudentEnrollment from "./components/StudentEnrollment";
-
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("jwt") || "");
@@ -45,14 +45,40 @@ function App() {
     localStorage.setItem("currentView", currentView);
   }, [currentView]);
 
+  const styles = {
+    splitWrapper: {
+      display: 'flex',
+      flexDirection: 'row',
+      gap: '40px',
+      justifyContent: 'center',
+      alignItems: 'stretch', // 🔥 Ensures both panels are same height
+      flexWrap: 'wrap',
+    },
+    leftPane: {
+      flex: 1,
+      minWidth: '370px',
+      maxWidth: '450px',
+    },
+    rightPane: {
+      flex: 1,
+      minWidth: '370px',
+      maxWidth: '450px',
+    },
+  };
+
   return (
     <>
       {!token ? (
-  <Container className="my-5">
-  <LoginForm onLoginSuccess={handleLoginSuccess} />
-  <hr className="my-4" />
-  <StudentEnrollment />
-</Container>
+        <Container className="my-5">
+          <div style={styles.splitWrapper}>
+            <div style={styles.leftPane}>
+              <StudentEnrollment />
+            </div>
+            <div style={styles.rightPane}>
+              <LoginForm onLoginSuccess={handleLoginSuccess} />
+            </div>
+          </div>
+        </Container>
       ) : (
         <>
           <NavigationBar
