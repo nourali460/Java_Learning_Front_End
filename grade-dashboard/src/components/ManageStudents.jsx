@@ -13,10 +13,10 @@ const SEMESTER_OPTIONS = [
 const COURSE_OPTIONS = [
   { label: 'Intro to Java', value: 'IntrotoJava' },
   { label: 'Intermediate Java', value: 'IntermediateJava' },
-  { label: 'Intro to C++', value: 'IntrotoC++' },
+  { label: 'Intro to C++', value: 'IntrotoCpp' },
   { label: 'Intermediate C++', value: 'IntermediateCpp' },
   { label: 'Data structures in Java', value: 'DataStructuresinJava' },
-  { label: 'Data structures in C++', value: 'DataStructuresC++' }
+  { label: 'Data structures in C++', value: 'DataStructuresinCpp' }
 ];
 
 function getAdminFromToken(token) {
