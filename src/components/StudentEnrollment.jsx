@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Form, Button, Alert, Row, Col, Table } from 'react-bootstrap';
+import { Card, Form, Button, Alert, Row, Col, Table, InputGroup } from 'react-bootstrap';
 import axios from 'axios';
 
 const API_BASE_URL = 'https://nour-gradeboard-api-1cea46a0d1f3.herokuapp.com';
@@ -87,38 +87,32 @@ function StudentEnrollment() {
 
   return (
     <div style={{ height: '100%' }}>
-      <Card className="p-3 shadow-sm h-100 d-flex flex-column justify-content-between" style={{ fontSize: '0.9rem' }}>
+      <Card className="p-4 shadow-sm h-100 border-0 rounded-4 bg-white d-flex flex-column justify-content-between" style={{ fontSize: '0.9rem' }}>
         <div>
-          <h6 className="text-primary fw-semibold mb-3" style={{ fontSize: '0.95rem' }}>
-            Student Enrollment (No Login Required)
-          </h6>
+          <div className="d-flex align-items-center gap-2 mb-3">
+            <i className="bi bi-person-plus-fill text-primary fs-4"></i>
+            <h6 className="text-primary fw-semibold mb-0">
+              Student Enrollment (No Login Required)
+            </h6>
+          </div>
 
           {!adminVerified ? (
             <>
-              <Form.Label className="mb-1" style={{ fontSize: '0.85rem' }}>
-                Enter Professor ID
-              </Form.Label>
-              <Row className="align-items-center g-2 mb-2">
-                <Col sm={8}>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-semibold text-secondary small">
+                  Enter Professor ID
+                </Form.Label>
+                <InputGroup size="sm">
                   <Form.Control
-                    type="text"
-                    size="sm"
                     value={adminId}
                     onChange={(e) => setAdminId(e.target.value)}
                     placeholder="e.g., firstname_ID"
                   />
-                </Col>
-                <Col sm="auto">
-                  <Button
-                    size="sm"
-                    variant="primary"
-                    style={{ height: '30px', padding: '0 10px', fontSize: '0.75rem' }}
-                    onClick={verifyAdmin}
-                  >
+                  <Button variant="primary" onClick={verifyAdmin}>
                     Verify
                   </Button>
-                </Col>
-              </Row>
+                </InputGroup>
+              </Form.Group>
             </>
           ) : (
             <>

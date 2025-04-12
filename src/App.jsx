@@ -7,6 +7,8 @@ import ManageStudents from "./components/ManageStudents";
 import NavigationBar from "./components/NavigationBar";
 import { decodeToken } from "./utils";
 import StudentEnrollment from "./components/StudentEnrollment";
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("jwt") || "");
