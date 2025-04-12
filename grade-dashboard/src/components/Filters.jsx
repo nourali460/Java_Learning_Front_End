@@ -8,19 +8,25 @@ function Filters({
   assignment, setAssignment,
   studentQuery, setStudentQuery
 }) {
-  // Unique dropdown options based on grades
-  const semesters = useMemo(() => [...new Set(grades.map(g => g.semesterId).filter(Boolean))].sort(), [grades]);
-  const courses = useMemo(() => [...new Set(grades.map(g => g.course).filter(Boolean))].sort(), [grades]);
-  const assignments = useMemo(() => {
-    return [...new Set(
+  // Extract unique values safely
+  const semesters = useMemo(() => (
+    [...new Set(grades.map(g => g.semesterId).filter(Boolean))].sort()
+  ), [grades]);
+
+  const courses = useMemo(() => (
+    [...new Set(grades.map(g => g.course).filter(Boolean))].sort()
+  ), [grades]);
+
+  const assignments = useMemo(() => (
+    [...new Set(
       grades
-        .filter(g => !course || g.course === course)
+        .filter(g => (!course || g.course === course) && (!semester || g.semesterId === semester))
         .map(g => g.assignment)
         .filter(Boolean)
-    )].sort();
-  }, [grades, course]);
+    )].sort()
+  ), [grades, course, semester]);
 
-  // Restore selected semester from localStorage (optional)
+  // Load previously selected semester from localStorage
   useEffect(() => {
     const saved = localStorage.getItem("selectedSemester");
     if (saved && semesters.includes(saved)) {
@@ -29,7 +35,9 @@ function Filters({
   }, [semesters, setSemester]);
 
   useEffect(() => {
-    localStorage.setItem("selectedSemester", semester);
+    if (semester) {
+      localStorage.setItem("selectedSemester", semester);
+    }
   }, [semester]);
 
   return (
@@ -60,7 +68,7 @@ function Filters({
           <Form.Label>Search by Student ID</Form.Label>
           <Form.Control
             type="text"
-            placeholder="e.g. student123"
+            placeholder="e.g. student1"
             value={studentQuery}
             onChange={(e) => setStudentQuery(e.target.value)}
           />

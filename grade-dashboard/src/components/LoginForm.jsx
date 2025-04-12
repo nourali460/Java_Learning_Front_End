@@ -21,9 +21,9 @@ function LoginForm({ onLoginSuccess }) {
     try {
       const res = await axios.post(`${API_BASE_URL}/admins/validate`, {
         name: username,
-        password: password,
+        password,
       });
-      onLoginSuccess(res.data.token);
+      onLoginSuccess(res.data.token); // Pass token to parent
     } catch (err) {
       console.error(err);
       setError('Login failed. Check credentials.');
@@ -39,7 +39,7 @@ function LoginForm({ onLoginSuccess }) {
           <Form.Label>Username</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter your username"
+            placeholder="Enter admin username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
@@ -48,7 +48,7 @@ function LoginForm({ onLoginSuccess }) {
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Enter your password"
+            placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -60,5 +60,6 @@ function LoginForm({ onLoginSuccess }) {
     </Card>
   );
 }
+
 
 export default LoginForm;

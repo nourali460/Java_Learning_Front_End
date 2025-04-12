@@ -5,6 +5,8 @@ import Dashboard from "./components/Dashboard";
 import ManageStudents from "./components/ManageStudents";
 import NavigationBar from "./components/NavigationBar";
 import { decodeToken } from "./utils";
+import StudentEnrollment from "./components/StudentEnrollment";
+
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("jwt") || "");
@@ -46,7 +48,11 @@ function App() {
   return (
     <>
       {!token ? (
-        <LoginForm onLoginSuccess={handleLoginSuccess} />
+  <Container className="my-5">
+  <LoginForm onLoginSuccess={handleLoginSuccess} />
+  <hr className="my-4" />
+  <StudentEnrollment />
+</Container>
       ) : (
         <>
           <NavigationBar
