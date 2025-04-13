@@ -28,10 +28,12 @@ function StudentEnrollment() {
   const [enrolledStudent, setEnrolledStudent] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [verifying, setVerifying] = useState(false);
 
   const verifyAdmin = async () => {
     setError('');
     setSuccess('');
+    setVerifying(true);
     try {
       const response = await axios.post(`${API_BASE_URL}/admins/contains`, { name: adminId });
       if (response.data.exists) {
@@ -43,6 +45,8 @@ function StudentEnrollment() {
     } catch (err) {
       console.error(err);
       setError("⚠️ Couldn't verify professor.");
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -110,8 +114,15 @@ function StudentEnrollment() {
                   onChange={(e) => setAdminId(e.target.value)}
                   placeholder="e.g., firstname_ID"
                 />
-                <Button variant="primary" onClick={verifyAdmin}>
-                  Verify
+                <Button variant="primary" onClick={verifyAdmin} disabled={verifying}>
+                  {verifying ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Verifying...
+                    </>
+                  ) : (
+                    'Verify'
+                  )}
                 </Button>
               </InputGroup>
             </Form.Group>
