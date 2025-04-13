@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Table } from 'react-bootstrap';
 
-function GradeTable({ data }) {
+function GradeTable({ data, formatCourseLabel }) {
   const [sortConfig, setSortConfig] = useState({ column: 'timestamp', direction: 'desc' });
 
   const handleSort = (column) => {
@@ -49,7 +49,7 @@ function GradeTable({ data }) {
           {sortedData.map((g, idx) => (
             <tr key={idx}>
               <td>{g.studentId}</td>
-              <td>{g.course}</td>
+              <td>{formatCourseLabel ? formatCourseLabel(g.course) : g.course}</td>
               <td>{g.assignment}</td>
               <td>{g.grade}</td>
               <td>{new Date(g.timestamp).toLocaleString(undefined, {

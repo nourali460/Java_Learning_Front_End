@@ -6,9 +6,9 @@ function Filters({
   semester, setSemester,
   course, setCourse,
   assignment, setAssignment,
-  studentQuery, setStudentQuery
+  studentQuery, setStudentQuery,
+  formatCourseLabel // 👈 passed down from Dashboard
 }) {
-  // Extract unique values safely
   const semesters = useMemo(() => (
     [...new Set(grades.map(g => g.semesterId).filter(Boolean))].sort()
   ), [grades]);
@@ -26,7 +26,6 @@ function Filters({
     )].sort()
   ), [grades, course, semester]);
 
-  // Load previously selected semester from localStorage
   useEffect(() => {
     const saved = localStorage.getItem("selectedSemester");
     if (saved && semesters.includes(saved)) {
@@ -54,7 +53,11 @@ function Filters({
           <Form.Label>Course</Form.Label>
           <Form.Select value={course} onChange={(e) => setCourse(e.target.value)}>
             <option value="">All Courses</option>
-            {courses.map(c => <option key={c} value={c}>{c}</option>)}
+            {courses.map(c => (
+              <option key={c} value={c}>
+                {formatCourseLabel ? formatCourseLabel(c) : c}
+              </option>
+            ))}
           </Form.Select>
         </Col>
         <Col md={3}>
