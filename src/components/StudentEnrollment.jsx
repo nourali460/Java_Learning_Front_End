@@ -96,32 +96,30 @@ function StudentEnrollment() {
             </h6>
           </div>
 
+          {error && <Alert variant="danger" className="py-2 mb-2">{error}</Alert>}
+          {success && <Alert variant="success" className="py-2 mb-2">{success}</Alert>}
+
           {!adminVerified ? (
-            <>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-semibold text-secondary small">
-                  Enter Professor ID
-                </Form.Label>
-                <InputGroup size="sm">
-                  <Form.Control
-                    value={adminId}
-                    onChange={(e) => setAdminId(e.target.value)}
-                    placeholder="e.g., firstname_ID"
-                  />
-                  <Button variant="primary" onClick={verifyAdmin}>
-                    Verify
-                  </Button>
-                </InputGroup>
-              </Form.Group>
-            </>
+            <Form.Group className="mb-3">
+              <Form.Label className="fw-semibold text-secondary small">
+                Enter Professor ID
+              </Form.Label>
+              <InputGroup size="sm">
+                <Form.Control
+                  value={adminId}
+                  onChange={(e) => setAdminId(e.target.value)}
+                  placeholder="e.g., firstname_ID"
+                />
+                <Button variant="primary" onClick={verifyAdmin}>
+                  Verify
+                </Button>
+              </InputGroup>
+            </Form.Group>
           ) : (
             <>
               <Alert variant="success" className="py-2 mb-2">
                 ✅ Professor <strong>{adminId}</strong> verified.
               </Alert>
-
-              {error && <Alert variant="danger" className="py-2 mb-2">{error}</Alert>}
-              {success && <Alert variant="success" className="py-2 mb-2">{success}</Alert>}
 
               <Row className="mb-2">
                 <Col md={6}>
