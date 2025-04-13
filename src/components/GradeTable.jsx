@@ -33,6 +33,8 @@ function GradeTable({ data, formatCourseLabel }) {
     return sortConfig.direction === 'asc' ? '▲' : '▼';
   };
 
+  const formatAssignmentLabel = (name) => name.replace(/_/g, ' ');
+
   return (
     <div className="table-responsive">
       <Table striped bordered hover>
@@ -50,7 +52,7 @@ function GradeTable({ data, formatCourseLabel }) {
             <tr key={idx}>
               <td>{g.studentId}</td>
               <td>{formatCourseLabel ? formatCourseLabel(g.course) : g.course}</td>
-              <td>{g.assignment}</td>
+              <td>{formatAssignmentLabel(g.assignment)}</td>
               <td>{g.grade}</td>
               <td>{new Date(g.timestamp).toLocaleString(undefined, {
                 dateStyle: 'short',
