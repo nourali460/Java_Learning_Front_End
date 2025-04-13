@@ -11,13 +11,16 @@ const SEMESTER_OPTIONS = [
 ];
 
 const COURSE_OPTIONS = [
-  { label: 'Intro to Java', value: 'IntrotoJava' },
-  { label: 'Intermediate Java', value: 'IntermediateJava' },
-  { label: 'Intro to C++', value: 'IntrotoCpp' },
-  { label: 'Intermediate C++', value: 'IntermediateCpp' },
-  { label: 'Data structures in Java', value: 'DataStructuresinJava' },
-  { label: 'Data structures in C++', value: 'DataStructuresinCpp' }
+  'IntroToJava', 'IntermediateJava', 'IntroToCpp',
+  'IntermediateCpp', 'DataStructuresInJava', 'DataStructuresInCpp'
 ];
+
+function formatCourseLabel(courseValue) {
+  return courseValue
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+    .trim();
+}
 
 function getAdminFromToken(token) {
   try {
@@ -26,10 +29,6 @@ function getAdminFromToken(token) {
   } catch {
     return '';
   }
-}
-
-function getCourseLabel(value) {
-  return COURSE_OPTIONS.find(c => c.value === value)?.label || value;
 }
 
 function ManageStudents({ token }) {
@@ -48,7 +47,7 @@ function ManageStudents({ token }) {
       const response = await axios.get(`${API_BASE_URL}/admins/students/passwords`, {
         params: {
           admin,
-          course: course,
+          course,
           semesterId: semester
         },
         headers: {
@@ -81,7 +80,7 @@ function ManageStudents({ token }) {
           id: newStudent.id,
           email: newStudent.email,
           password: '',
-          course: course,
+          course,
           semesterId: semester
         },
         {
@@ -91,7 +90,7 @@ function ManageStudents({ token }) {
 
       setNewStudent({ id: '', email: '' });
       setSuccessMessage(`✅ Student "${newStudent.id}" added successfully.`);
-      fetchEnrolledStudents(); // refresh table
+      fetchEnrolledStudents();
     } catch (err) {
       if (err.response?.status === 401) {
         setError('⛔ Session expired. Please log in again.');
@@ -129,7 +128,7 @@ function ManageStudents({ token }) {
           >
             <option value="">-- Choose Course --</option>
             {COURSE_OPTIONS.map(c => (
-              <option key={c.value} value={c.value}>{c.label}</option>
+              <option key={c} value={c}>{formatCourseLabel(c)}</option>
             ))}
           </Form.Select>
         </Col>
@@ -181,7 +180,7 @@ function ManageStudents({ token }) {
           {students.length > 0 && (
             <>
               <h5 className="mt-4">
-                Students Enrolled in {getCourseLabel(course)} ({semester})
+                Students Enrolled in {formatCourseLabel(course)} ({semester})
               </h5>
               <Table bordered hover>
                 <thead>

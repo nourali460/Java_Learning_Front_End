@@ -103,13 +103,13 @@ function Dashboard({ token, adminName, onLogout }) {
         <img src="/logo.png" alt="Platform Logo" style={{ height: '250px', width: 'auto' }} />
       </div>
 
-      {/* Header & Logout */}
-      <Row className="align-items-center mt-4 mb-3">
-        <Col><h3>Student Grades</h3></Col>
-        <Col className="text-end">
-          <Button variant="outline-danger" onClick={onLogout}>Logout</Button>
-        </Col>
-      </Row>
+{/* Header */}
+<Row className="align-items-center mt-4 mb-3">
+  <Col><h3>Student Grades</h3></Col>
+  <Col className="text-end">
+    {/* Reserved for future controls like Export or Settings */}
+  </Col>
+</Row>
 
       {/* Filters */}
       <Filters
