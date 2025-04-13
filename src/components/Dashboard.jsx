@@ -6,12 +6,21 @@ import axios from 'axios';
 
 const API_BASE_URL = 'https://nour-gradeboard-api-1cea46a0d1f3.herokuapp.com';
 
+// Mapping for course labels
+const COURSE_LABELS = {
+  IntrotoJava: 'Intro to Java',
+  IntermediateJava: 'Intermediate Java',
+  IntrotoCpp: 'Intro to C++',
+  IntermediateCpp: 'Intermediate C++',
+  DataStructuresinJava: 'Data Structures in Java',
+  DataStructuresCpp: 'Data Structures in C++',
+};
+
 function Dashboard({ token, adminName, onLogout }) {
   const [grades, setGrades] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Filters
   const [semester, setSemester] = useState('');
   const [course, setCourse] = useState('');
   const [assignment, setAssignment] = useState('');
@@ -23,7 +32,7 @@ function Dashboard({ token, adminName, onLogout }) {
       setLoading(false);
       return;
     }
-  
+
     const fetchGrades = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/grades?admin=${adminName}`, {
@@ -39,10 +48,9 @@ function Dashboard({ token, adminName, onLogout }) {
         setLoading(false);
       }
     };
-  
+
     fetchGrades();
   }, [adminName, token]);
-  
 
   useEffect(() => {
     const filteredData = grades.filter((g) => {
@@ -61,7 +69,7 @@ function Dashboard({ token, adminName, onLogout }) {
     const headers = ['Student ID', 'Course', 'Assignment', 'Grade', 'Timestamp'];
     const rows = data.map(g => [
       g.studentId,
-      g.course,
+      COURSE_LABELS[g.course] || g.course,
       g.assignment,
       g.grade,
       new Date(g.timestamp).toLocaleString()
@@ -98,10 +106,12 @@ function Dashboard({ token, adminName, onLogout }) {
         <img src="/logo.png" alt="Platform Logo" style={{ height: '250px', width: 'auto' }} />
       </div>
 
-      {/* Header & Logout */}
+      {/* Header */}
       <Row className="align-items-center mt-4 mb-3">
         <Col><h3>Student Grades</h3></Col>
-        <Col className="text-end">{/* Removed duplicate logout */}</Col>
+        <Col className="text-end">
+          <Button variant="outline-danger" onClick={onLogout}>Logout</Button>
+        </Col>
       </Row>
 
       {/* Filters */}
@@ -111,6 +121,7 @@ function Dashboard({ token, adminName, onLogout }) {
         course={course} setCourse={setCourse}
         assignment={assignment} setAssignment={setAssignment}
         studentQuery={studentQuery} setStudentQuery={setStudentQuery}
+        courseLabels={COURSE_LABELS}
       />
 
       {/* CSV Download */}
@@ -119,7 +130,7 @@ function Dashboard({ token, adminName, onLogout }) {
       </Button>
 
       {/* Grade Table */}
-      <GradeTable data={filtered} />
+      <GradeTable data={filtered} courseLabels={COURSE_LABELS} />
     </>
   );
 }
