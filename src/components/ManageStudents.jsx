@@ -174,7 +174,7 @@ function ManageStudents({ token }) {
                     type="text"
                     value={newStudent.id}
                     onChange={(e) => setNewStudent({ ...newStudent, id: e.target.value })}
-                    placeholder="student123"
+                    placeholder="Alice_123"
                   />
                 </td>
                 <td>
