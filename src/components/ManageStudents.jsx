@@ -11,15 +11,12 @@ const SEMESTER_OPTIONS = [
 ];
 
 const COURSE_OPTIONS = [
-  'IntroToJava', 'IntermediateJava', 'IntroToCpp',
-  'IntermediateCpp', 'DataStructuresInJava', 'DataStructuresInCpp'
+  'Intro_to_Java', 'Intermediate_Java', 'Intro_to_C++',
+  'Intermediate_C++', 'Data_Structures_in_Java', 'Data_Structures_in_C++'
 ];
 
 function formatCourseLabel(courseValue) {
-  return courseValue
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
-    .trim();
+  return courseValue.replace(/_/g, ' ').trim();
 }
 
 function getAdminFromToken(token) {
