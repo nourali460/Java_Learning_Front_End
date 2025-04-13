@@ -59,6 +59,11 @@ function ManageStudents({ token }) {
     setError('');
     setSuccessMessage('');
 
+    if (!newStudent.id.match(/^[a-zA-Z]+_\d+$/)) {
+      setError("❌ Student ID must follow format: firstname_idnumber (e.g., alice_12345)");
+      return;
+    }
+
     if (!newStudent.id || !newStudent.email || !semester || !course) {
       setError('⚠️ All fields are required.');
       return;
