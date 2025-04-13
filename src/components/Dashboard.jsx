@@ -7,10 +7,7 @@ import axios from 'axios';
 const API_BASE_URL = 'https://nour-gradeboard-api-1cea46a0d1f3.herokuapp.com';
 
 function formatCourseLabel(courseValue) {
-  return courseValue
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
-    .trim();
+  return courseValue.replace(/_/g, ' ');
 }
 
 function Dashboard({ token, adminName, onLogout }) {
@@ -103,13 +100,13 @@ function Dashboard({ token, adminName, onLogout }) {
         <img src="/logo.png" alt="Platform Logo" style={{ height: '250px', width: 'auto' }} />
       </div>
 
-{/* Header */}
-<Row className="align-items-center mt-4 mb-3">
-  <Col><h3>Student Grades</h3></Col>
-  <Col className="text-end">
-    {/* Reserved for future controls like Export or Settings */}
-  </Col>
-</Row>
+      {/* Header */}
+      <Row className="align-items-center mt-4 mb-3">
+        <Col><h3>Student Grades</h3></Col>
+        <Col className="text-end">
+          {/* Reserved for future controls like Export or Settings */}
+        </Col>
+      </Row>
 
       {/* Filters */}
       <Filters
