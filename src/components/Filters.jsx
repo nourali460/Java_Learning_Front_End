@@ -64,7 +64,11 @@ function Filters({
           <Form.Label>Assignment</Form.Label>
           <Form.Select value={assignment} onChange={(e) => setAssignment(e.target.value)}>
             <option value="">All Assignments</option>
-            {assignments.map(a => <option key={a} value={a}>{a}</option>)}
+            {assignments.map(a => (
+              <option key={a} value={a}>
+                {a.replace(/_/g, ' ')}
+              </option>
+            ))}
           </Form.Select>
         </Col>
         <Col md={3}>
