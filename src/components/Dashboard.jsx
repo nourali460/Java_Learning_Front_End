@@ -101,9 +101,7 @@ function Dashboard({ token, adminName, onLogout }) {
       {/* Header & Logout */}
       <Row className="align-items-center mt-4 mb-3">
         <Col><h3>Student Grades</h3></Col>
-        <Col className="text-end">
-          <Button variant="outline-danger" onClick={onLogout}>Logout</Button>
-        </Col>
+        <Col className="text-end">{/* Removed duplicate logout */}</Col>
       </Row>
 
       {/* Filters */}
