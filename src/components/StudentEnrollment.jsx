@@ -11,12 +11,12 @@ const SEMESTER_OPTIONS = [
 ];
 
 const COURSE_OPTIONS = [
-  { label: 'Intro to Java', value: 'IntrotoJava' },
-  { label: 'Intermediate Java', value: 'IntermediateJava' },
-  { label: 'Intro to C++', value: 'IntrotoCpp' },
-  { label: 'Intermediate C++', value: 'IntermediateCpp' },
-  { label: 'Data structures in Java', value: 'DataStructuresinJava' },
-  { label: 'Data structures in C++', value: 'DataStructuresCpp' }
+  { label: 'Intro to Java', value: 'Intro_to_Java' },
+  { label: 'Intermediate Java', value: 'Intermediate_Java' },
+  { label: 'Intro to C++', value: 'Intro_to_C++' },
+  { label: 'Intermediate C++', value: 'Intermediate_C++' },
+  { label: 'Data Structures in Java', value: 'Data_Structures_in_Java' },
+  { label: 'Data Structures in C++', value: 'Data_Structures_in_C++' }
 ];
 
 function StudentEnrollment() {
