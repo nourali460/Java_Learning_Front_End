@@ -65,10 +65,6 @@ function LoginForm({ onLoginSuccess }) {
 
         <button type="submit" style={styles.btn}>Login</button>
       </form>
-
-      <div style={styles.footer}>
-        <a href="#">Forget password?</a> or <a href="#">Sign up</a>
-      </div>
     </div>
   );
 }
