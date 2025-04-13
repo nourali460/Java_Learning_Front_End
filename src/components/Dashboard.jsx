@@ -64,7 +64,7 @@ function Dashboard({ token, adminName, onLogout }) {
     const rows = data.map(g => [
       g.studentId,
       formatCourseLabel(g.course),
-      g.assignment,
+      g.assignment.replace(/_/g, ' '),  // 👈 this formats the assignment
       g.grade,
       new Date(g.timestamp).toLocaleString()
     ]);
