@@ -11,12 +11,12 @@ const SEMESTER_OPTIONS = [
 ];
 
 const COURSE_OPTIONS = [
-  'Intro_to_Java', 'Intermediate_Java', 'Intro_to_C++',
-  'Intermediate_C++', 'Data_Structures_in_Java', 'Data_Structures_in_C++'
+  'Intro_to_Java', 'IntermediateJava', 'Intro_to_C++',
+  'IntermediateC++', 'Data_Structures_in_Java', 'Data_Structures_in_C++'
 ];
 
 function formatCourseLabel(courseValue) {
-  return courseValue.replace(/_/g, ' ').trim();
+  return courseValue.replace(/_/g, ' ');
 }
 
 function getAdminFromToken(token) {
@@ -42,14 +42,8 @@ function ManageStudents({ token }) {
 
     try {
       const response = await axios.get(`${API_BASE_URL}/admins/students/passwords`, {
-        params: {
-          admin,
-          course,
-          semesterId: semester
-        },
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        params: { admin, course, semesterId: semester },
+        headers: { Authorization: `Bearer ${token}` }
       });
       setStudents(response.data);
     } catch (err) {
@@ -71,19 +65,15 @@ function ManageStudents({ token }) {
     }
 
     try {
-      await axios.post(
-        `${API_BASE_URL}/students/add`,
-        {
-          id: newStudent.id,
-          email: newStudent.email,
-          password: '',
-          course,
-          semesterId: semester
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await axios.post(`${API_BASE_URL}/students/add`, {
+        id: newStudent.id,
+        email: newStudent.email,
+        password: '',
+        course,
+        semesterId: semester
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       setNewStudent({ id: '', email: '' });
       setSuccessMessage(`✅ Student "${newStudent.id}" added successfully.`);
@@ -102,6 +92,32 @@ function ManageStudents({ token }) {
       }
       console.error(err);
     }
+  };
+
+  const handleCopy = (student) => {
+    const text = `Student ID: ${student.id}\nEmail: ${student.email}\nPassword: ${student.hashedPassword}`;
+    navigator.clipboard.writeText(text)
+      .then(() => alert('✅ Copied to clipboard'))
+      .catch(() => alert('❌ Failed to copy'));
+  };
+
+  const handleDownloadCSV = () => {
+    if (!students.length) return;
+
+    const headers = ['Student ID', 'Email', 'Password'];
+    const rows = students.map(s => [s.id, s.email, s.hashedPassword]);
+    const csv = [headers.join(','), ...rows.map(r => r.map(v => `"${v}"`).join(','))].join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const filename = `enrolled-students-${course}-${semester}.csv`;
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -179,12 +195,16 @@ function ManageStudents({ token }) {
               <h5 className="mt-4">
                 Students Enrolled in {formatCourseLabel(course)} ({semester})
               </h5>
+              <Button variant="outline-primary" size="sm" className="mb-2" onClick={handleDownloadCSV}>
+                📥 Download CSV
+              </Button>
               <Table bordered hover>
                 <thead>
                   <tr>
                     <th>Student ID</th>
                     <th>Email</th>
                     <th>Password</th>
+                    <th>Copy</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -193,6 +213,11 @@ function ManageStudents({ token }) {
                       <td>{s.id}</td>
                       <td>{s.email}</td>
                       <td><code>{s.hashedPassword || 'N/A'}</code></td>
+                      <td>
+                        <Button variant="outline-secondary" size="sm" onClick={() => handleCopy(s)}>
+                          📋 Copy
+                        </Button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
