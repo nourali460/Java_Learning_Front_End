@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Table } from 'react-bootstrap';
+import { Table, Button, Collapse } from 'react-bootstrap';
 
 function GradeTable({ data, formatCourseLabel }) {
   const [sortConfig, setSortConfig] = useState({ column: 'timestamp', direction: 'desc' });
+  const [openIndex, setOpenIndex] = useState(null);
 
   const handleSort = (column) => {
     setSortConfig((prev) => {
@@ -35,6 +36,10 @@ function GradeTable({ data, formatCourseLabel }) {
 
   const formatAssignmentLabel = (name) => name.replace(/_/g, ' ');
 
+  const toggleCollapse = (idx) => {
+    setOpenIndex(openIndex === idx ? null : idx);
+  };
+
   return (
     <div className="table-responsive">
       <Table striped bordered hover>
@@ -45,20 +50,47 @@ function GradeTable({ data, formatCourseLabel }) {
             <th onClick={() => handleSort('assignment')}>Assignment {renderArrow('assignment')}</th>
             <th onClick={() => handleSort('grade')}>Grade {renderArrow('grade')}</th>
             <th onClick={() => handleSort('timestamp')}>Timestamp {renderArrow('timestamp')}</th>
+            <th>Feedback</th>
           </tr>
         </thead>
         <tbody>
           {sortedData.map((g, idx) => (
-            <tr key={idx}>
-              <td>{g.studentId}</td>
-              <td>{formatCourseLabel ? formatCourseLabel(g.course) : g.course}</td>
-              <td>{formatAssignmentLabel(g.assignment)}</td>
-              <td>{g.grade}</td>
-              <td>{new Date(g.timestamp).toLocaleString(undefined, {
-                dateStyle: 'short',
-                timeStyle: 'short'
-              })}</td>
-            </tr>
+            <React.Fragment key={idx}>
+              <tr>
+                <td>{g.studentId}</td>
+                <td>{formatCourseLabel ? formatCourseLabel(g.course) : g.course}</td>
+                <td>{formatAssignmentLabel(g.assignment)}</td>
+                <td>{g.grade}</td>
+                <td>{new Date(g.timestamp).toLocaleString(undefined, {
+                  dateStyle: 'short',
+                  timeStyle: 'short'
+                })}</td>
+                <td>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => toggleCollapse(idx)}
+                  >
+                    {openIndex === idx ? 'Hide' : 'View'}
+                  </Button>
+                </td>
+              </tr>
+              <tr>
+                <td colSpan={6} style={{ padding: 0, borderTop: 'none' }}>
+                  <Collapse in={openIndex === idx}>
+                    <div style={{
+                      background: '#f8f9fa',
+                      padding: '10px',
+                      whiteSpace: 'pre-wrap',
+                      borderTop: '1px solid #dee2e6',
+                      fontFamily: 'monospace'
+                    }}>
+                      {g.consoleOutput || 'No feedback available.'}
+                    </div>
+                  </Collapse>
+                </td>
+              </tr>
+            </React.Fragment>
           ))}
         </tbody>
       </Table>
