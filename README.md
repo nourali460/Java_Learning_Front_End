@@ -1,70 +1,16 @@
-# Getting Started with Create React App
+### Professor Dashboard Frontend Features
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+| **Feature / Component**         | **Description**                                                                                     | **Technologies / Libraries**          | **Endpoints Involved**                              | **Notes**                                                                 |
+|----------------------------------|-----------------------------------------------------------------------------------------------------|----------------------------------------|------------------------------------------------------|-------------------------------------------------------------------------|
+| **Professor Login Form**        | Allows admin/professor to log in using username and password.                                       | React, Bootstrap, Axios                | `POST /admins/validate`                              | Returns a JWT token on success. Token stored in `localStorage`.        |
+| **Token Handling**              | JWT is stored client-side for use in authenticated requests.                                        | Axios Interceptors, `localStorage`     | Used in headers for protected routes (`Authorization: Bearer`) | Clears token on logout.                                                 |
+| **View Switching (No Routing)** | Manual component swapping instead of `react-router-dom`.                                            | React state (`currentView`)            | N/A                                                  | Simplified navigation using state variable.                            |
+| **Dashboard Header**            | Displays professor name and logout option.                                                          | React, Bootstrap                       | N/A                                                  | Visible only after successful login.                                   |
+| **Grades Table View**           | Displays all student grades grouped by student ID.                                                  | React, Bootstrap Table                 | `GET /grades`                                       | Filtered using token for professor-specific data.                      |
+| **Semester Filter Dropdown**    | Dropdown to select current semester and filter displayed grades.                                   | React, Bootstrap Dropdown              | Client-side filter only                             | Populated dynamically based on available semester values.              |
+| **Course & Assignment Filters** | Filters grades based on course and selected assignment.                                             | React, Bootstrap Dropdown              | Client-side filter                                  | Assignment options are dependent on selected course.                   |
+| **Manage Students View**        | Interface for adding new students with email, username, course, semester.                          | React, Bootstrap Form, Axios           | `POST /students/add`                                | Auto-generates 6-digit password. Temporarily shows hashed password.    |
+| **Student Password Retrieval**  | Temporary feature to retrieve student passwords for testing/debugging.                             | Axios                                  | `POST /admins/students/passwords`                   | Will be removed later per plan.                                         |
+| **Component Modularity**        | `GradesTable`, `ManageStudents`, `LoginForm`, `Header`, etc. broken into separate components.      | React Functional Components            | N/A                                                  | Code organized for maintainability.                                    |
+| **Tab-like Navigation**         | UI tabs for switching between "View Grades" and "Manage Students".                                 | Bootstrap Nav Tabs                     | N/A                                                  | State-driven view change.                                              |
+| **CSV/JSON Export (planned)**   | Option to export grades as CSV or JSON for backup or reporting.                                    | JavaScript (planned)                   | `GET /grades`                                       | To be implemented via download buttons.                                |
